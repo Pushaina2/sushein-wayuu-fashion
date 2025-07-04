@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sushein Wayuu Fashion</title>
+    <link rel="icon" type="image/x-icon" href="img/favicon-wayuu.png.jpg"> <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Estilos generales */
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: #f0f2f5; /* Un gris más claro */
+            margin: 0;
+            padding: 0;
+            color: #333;
+        }
+
+        /* Barra de navegación */
+        .navbar {
+            background-color: #212529; /* Un negro más suave */
+            padding: 15px 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .navbar-brand {
+            color: #fff !important;
+            font-weight: 700; /* Más audaz */
+            font-size: 1.6em;
+            letter-spacing: 1px;
+        }
+
+        .navbar-nav .nav-link {
+            color: #e9ecef !important; /* Blanco ligeramente apagado */
+            font-weight: 600;
+            margin: 0 10px;
+            transition: color 0.3s ease, text-decoration 0.3s ease;
+        }
+
+        .navbar-nav .nav-link:hover {
+            color: #007bff !important; /* Azul más vibrante */
+            text-decoration: underline;
+        }
+
+        .nav-icon {
+            font-size: 1.4em;
+            margin-left: 10px;
+            cursor: pointer;
+            color: #e9ecef;
+            transition: color 0.3s ease;
+        }
+
+        .nav-icon:hover {
+            color: #007bff;
+        }
+
+        .cart-badge {
+            background-color: #dc3545; /* Rojo de Bootstrap */
+            color: white;
+            border-radius: 50%;
+            font-size: 0.75em;
+            padding: 3px 7px;
+            position: absolute;
+            top: 8px;
+            right: 0px;
+            transform: translate(50%, -50%);
+            min-width: 22px;
+            text-align: center;
+        }
+
+        /* Estilos para las tarjetas de productos */
+        .card {
+            border: none; /* Sin borde */
+            border-radius: 10px;
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08); /* Sombra más suave */
+        }
+
+        .card:hover {
+            transform: translateY(-8px); /* Elevación más notable */
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15); /* Sombra más pronunciada */
+        }
+
+        .card-img-top {
+            border-radius: 10px 10px 0 0;
+            height: 220px; /* Slightly taller images */
+            object-fit: cover;
+        }
+
+        .card-body {
+            padding: 20px;
+        }
+
+        .card-title {
+            font-weight: 700;
+            color: #007bff;
+            margin-bottom: 10px;
+        }
+
+        .card-text {
+            font-size: 1.1em;
+            color: #555;
+            font-weight: 600;
+        }
+
+        .card-footer {
+            background-color: #fff;
+            border-top: 1px solid #eee;
+            padding: 15px 20px;
+            text-align: center;
+        }
+
+        .btn-primary {
+            background-color: #007bff;
+            border-color: #007bff;
+            font-weight: 600;
+            transition: background-color 0.3s ease, border-color 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            background-color: #0056b3;
+            border-color: #0056b3;
+        }
+
+        /* Sección de productos destacados */
+        .container.my-4 {
+            padding-top: 40px;
+            padding-bottom: 40px;
+        }
+
+        h2.text-center {
+            font-size: 2.5em;
+            font-weight: 700;
+            color: #212529;
+            margin-bottom: 50px;
+            position: relative;
+            display: inline-block;
+            width: 100%;
+        }
+
+        h2.text-center::after {
+            content: '';
+            display: block;
+            width: 80px;
+            height: 4px;
+            background-color: #007bff;
+            margin: 15px auto 0;
+            border-radius: 2px;
+        }
+
+        /* Pie de página */
+        footer {
+            background-color: #212529;
+            color: #e9ecef;
+            padding: 40px 0;
+            text-align: center;
+            margin-top: 50px;
+        }
+
+        .redes-sociales a {
+            color: #e9ecef;
+            margin: 0 15px;
+            font-size: 1.8em;
+            transition: color 0.3s ease;
+        }
+
+        .redes-sociales a:hover {
+            color: #007bff;
+        }
+
+        .contacto {
+            margin-top: 25px;
+            font-size: 1.1em;
+        }
+
+        .contacto p {
+            margin-bottom: 8px;
+        }
+
+        .contacto a {
+            color: #007bff;
+            text-decoration: none;
+            transition: text-decoration 0.3s ease, color 0.3s ease;
+        }
+
+        .contacto a:hover {
+            text-decoration: underline;
+            color: #0056b3;
+        }
+
+        footer p {
+            margin-top: 25px;
+            font-size: 0.9em;
+            color: #adb5bd;
+        }
+
+        /* Estilos del modal del carrito */
+        #cartModal .modal-header {
+            background-color: #007bff;
+            color: white;
+            border-bottom: none;
+        }
+
+        #cartModal .modal-title {
+            font-weight: 700;
+        }
+
+        #cartModal .modal-body {
+            padding: 20px;
+        }
+
+        #cartItemsContainer .cart-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+
+        #cartItemsContainer .cart-item:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        #cartItemsContainer .cart-item img {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 5px;
+            margin-right: 15px;
+            border: 1px solid #ddd;
+            flex-shrink: 0;
+        }
+
+        #cartItemsContainer .cart-item-details {
+            flex-grow: 1;
+        }
+
+        #cartItemsContainer .cart-item-details h6 {
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        #cartItemsContainer .cart-item-details p {
+            margin-bottom: 0;
+            font-size: 0.95em;
+            color: #666;
+        }
+
+        #cartItemsContainer .remove-item-btn {
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 5px 10px;
+            font-size: 0.85em;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+            margin-left: 15px;
+            flex-shrink: 0;
+        }
+
+        #cartItemsContainer .remove-item-btn:hover {
+            background-color: #c82333;
+        }
+
+        #cartTotal {
+            font-size: 1.3em;
+            font-weight: 700;
+            color: #212529;
+            margin-top: 20px;
+            text-align: right;
+        }
+
+        #cartModal .modal-footer {
+            border-top: 1px solid #eee;
+            padding: 15px;
+            justify-content: space-between;
+        }
+
+        /* Estilos para la sección "Sobre Nosotros" */
+        .about-section {
+            padding: 60px 0;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            margin-top: 40px;
+            margin-bottom: 40px;
+        }
+
+        .about-section h2 {
+            font-size: 2.8em;
+            font-weight: 700;
+            color: #212529;
+            margin-bottom: 30px;
+        }
+
+        .about-section p {
+            font-size: 1.15em;
+            line-height: 1.8;
+            color: #555;
+            margin-bottom: 20px;
+            text-align: justify;
+        }
+
+        .about-section .list-unstyled li {
+            font-size: 1.1em;
+            line-height: 1.8;
+            color: #444;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: flex-start;
+        }
+
+        .about-section .list-unstyled li i {
+            color: #007bff; /* Color azul para los íconos */
+            margin-right: 15px;
+            font-size: 1.2em;
+            margin-top: 5px; /* Alineación con el texto */
+        }
+
+        .about-section .img-fluid {
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#top">Sushein Wayuu Fashion</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#productos">Productos</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#sobre-nosotros">Sobre nosotros</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="https://wa.me/573215508152" target="_blank" title="WhatsApp">
+                            <i class="fab fa-whatsapp nav-icon"></i>
+                        </a>
+                    </li>
+                    <li class="nav-item position-relative">
+                        <i class="fa-solid fa-cart-shopping nav-icon" id="cart-icon" data-bs-toggle="modal" data-bs-target="#cartModal"></i>
+                        <span class="cart-badge" id="cart-badge">0</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <section class="container my-5 about-section" id="sobre-nosotros">
+        <div class="row align-items-center">
+            <div class="col-md-6 mb-4 mb-md-0">
+                <img src="img/mujer-wayuu-tejiendo-detalle.jpg.jpg" alt="Mujer Wayuu tejiendo" class="img-fluid rounded shadow">
+            </div>
+            <div class="col-md-6">
+                <h2 class="mb-4 fw-bold text-primary">Sobre Nosotros</h2>
+                <p class="text-muted">
+                    <strong>Sushein Wayuu Fashion</strong> nace del corazón de la cultura Wayuu, con el propósito de preservar, visibilizar y compartir con el mundo la riqueza ancestral de nuestro pueblo a través del arte textil. Somos una marca artesanal colombiana que fusiona tradición, identidad y moda, apoyando directamente a las comunidades indígenas Wayuu.
+                </p>
+                <p class="text-muted">
+                    Cada producto que ofrecemos —mantas, mochilas, chinchorros, guaireñas, accesorios y ropa para bebés— es tejido a mano por mujeres Wayuu, quienes plasman en cada puntada sus historias, saberes, símbolos y legado. Nos enorgullece ser un puente entre el trabajo ancestral y un mercado que valora lo auténtico, lo hecho a mano y lo sostenible.
+                </p>
+                <ul class="list-unstyled text-muted">
+                    <li><i class="fa-solid fa-bullseye text-primary me-2"></i><strong>Misión:</strong> Impulsar el desarrollo económico y cultural de la comunidad Wayuu mediante la promoción y comercialización de sus productos artesanales.</li>
+                    <li><i class="fa-solid fa-eye text-primary me-2 mt-2"></i><strong>Visión:</strong> Ser una marca líder en moda étnica artesanal, reconocida por su compromiso social, calidad y autenticidad cultural.</li>
+                    <li><i class="fa-solid fa-star text-primary me-2 mt-2"></i><strong>Diferenciales:</strong> Piezas únicas, comercio justo, identidad Wayuu y responsabilidad social.</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <section class="container my-4" id="productos">
+        <h2 class="text-center">Productos Destacados</h2>
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+            <div class="col">
+                <div class="card h-100">
+                    <img src="img/Mantas wayuu 1A.jpeg" class="card-img-top" alt="Manta Wayuu">
+                    <div class="card-body">
+                        <h5 class="card-title">Manta Wayuu</h5>
+                        <p class="card-text">$80.000</p>
+                    </div>
+                    <div class="card-footer">
+                        <button class="btn btn-primary add-to-cart" data-name="Manta Wayuu" data-price="80000" data-image="img/Mantas wayuu 1A.jpeg">Agregar al carrito</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col">
+                <div class="card h-100">
+                    <img src="img/Mochila wayuu.jpg" class="card-img-top" alt="Mochila Wayuu">
+                    <div class="card-body">
+                        <h5 class="card-title">Mochila Wayuu</h5>
+                        <p class="card-text">$100.000</p>
+                    </div>
+                    <div class="card-footer">
+                        <button class="btn btn-primary add-to-cart" data-name="Mochila Wayuu" data-price="100000" data-image="img/Mochila wayuu.jpg">Agregar al carrito</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col">
+                <div class="card h-100">
+                    <img src="img/img-6.jpg" class="card-img-top" alt="Chinchorro Wayuu">
+                    <div class="card-body">
+                        <h5 class="card-title">Chinchorro Wayuu</h5>
+                        <p class="card-text">$2.000.000</p>
+                    </div>
+                    <div class="card-footer">
+                        <button class="btn btn-primary add-to-cart" data-name="Chinchorro Wayuu" data-price="2000000" data-image="img/img-6.jpg">Agregar al carrito</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col">
+                <div class="card h-100">
+                    <img src="img/img-2.jpeg" class="card-img-top" alt="Ropa para Bebés">
+                    <div class="card-body">
+                        <h5 class="card-title">Ropa para Bebés</h5>
+                        <p class="card-text">$45.000</p>
+                    </div>
+                    <div class="card-footer">
+                        <button class="btn btn-primary add-to-cart" data-name="Ropa para Bebés" data-price="45000" data-image="img/img-2.jpeg">Agregar al carrito</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col">
+                <div class="card h-100">
+                    <img src="img/acesorios wayu.jpg" class="card-img-top" alt="Accesorios Wayuu">
+                    <div class="card-body">
+                        <h5 class="card-title">Accesorios Wayuu</h5>
+                        <p class="card-text">$15.000</p>
+                    </div>
+                    <div class="card-footer">
+                        <button class="btn btn-primary add-to-cart" data-name="Accesorios Wayuu" data-price="15000" data-image="img/acesorios wayu.jpg">Agregar al carrito</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col">
+                <div class="card h-100">
+                    <img src="img/guaireñas.png" class="card-img-top" alt="Guaireñas">
+                    <div class="card-body">
+                        <h5 class="card-title">Guaireñas</h5>
+                        <p class="card-text">$20.000</p>
+                    </div>
+                    <div class="card-footer">
+                        <button class="btn btn-primary add-to-cart" data-name="Guaireñas" data-price="20000" data-image="img/guaireñas.png">Agregar al carrito</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="modal fade" id="cartModal" tabindex="-1" aria-labelledby="cartModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="cartModalLabel"><i class="fa-solid fa-shopping-cart me-2"></i>Tu Carrito de Compras</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="cartItemsContainer">
+                        </div>
+                    <div id="cartTotal" class="mt-4"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Seguir Comprando</button>
+                    <button type="button" class="btn btn-success">Proceder al Pago</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="container">
+            <div class="redes-sociales">
+                <a href="https://wa.me/573215508152" target="_blank" title="WhatsApp">
+                    <i class="fab fa-whatsapp"></i>
+                </a>
+                <a href="https://www.facebook.com/SusheinWayuuFashion" target="_blank" title="Facebook">
+                    <i class="fab fa-facebook"></i>
+                </a>
+                <a href="https://twitter.com/SusheinWayuu" target="_blank" title="X (Twitter)">
+                    <i class="fab fa-twitter"></i>
+                </a>
+                <a href="https://www.instagram.com/SusheinWayuu" target="_blank" title="Instagram">
+                    <i class="fab fa-instagram"></i>
+                </a>
+                <a href="https://www.tiktok.com/@SusheinWayuu" target="_blank" title="TikTok">
+                    <i class="fab fa-tiktok"></i>
+                </a>
+                <a href="https://www.youtube.com/SusheinWayuu" target="_blank" title="YouTube">
+                    <i class="fab fa-youtube"></i>
+                </a>
+            </div>
+            <div class="contacto">
+                <p>Contacto: <a href="mailto:susheinwayuu@gmail.com">susheinwayuu@gmail.com</a></p>
+                <p>WhatsApp: <a href="https://wa.me/573215508152">+57 321 550 8152</a></p>
+            </div>
+            <p>© 2024 Sushein Wayuu Fashion - Todos los derechos reservados</p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const cartIcon = document.getElementById('cart-icon');
+            const cartBadge = document.getElementById('cart-badge');
+            const addToCartButtons = document.querySelectorAll('.add-to-cart');
+            const cartItemsContainer = document.getElementById('cartItemsContainer');
+            const cartTotalElement = document.getElementById('cartTotal');
+
+            // Inicializar el carrito desde localStorage o como un array vacío
+            let cart = JSON.parse(localStorage.getItem('susheinWayuuCart')) || [];
+
+            // --- Funcionalidad del Carrito ---
+
+            /**
+             * Actualiza el número en el badge del carrito.
+             */
+            const updateCartBadge = () => {
+                const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+                cartBadge.textContent = totalItems;
+            };
+
+            /**
+             * Guarda el estado actual del carrito en localStorage.
+             */
+            const saveCart = () => {
+                localStorage.setItem('susheinWayuuCart', JSON.stringify(cart));
+            };
+
+            /**
+             * Formatea un precio a la moneda local (pesos colombianos).
+             * @param {number} price - El precio a formatear.
+             * @returns {string} El precio formateado.
+             */
+            const formatPrice = (price) => {
+                // Asegúrate de que el precio sea un número antes de formatearlo
+                if (typeof price !== 'number') {
+                    price = parseFloat(price);
+                }
+                // Si el precio no es un número válido, devuelve 0 formateado
+                if (isNaN(price)) {
+                    return (0).toLocaleString('es-CO');
+                }
+                return price.toLocaleString('es-CO'); // Formato para Pesos Colombianos
+            };
+
+            /**
+             * Agrega un producto al carrito. Si ya existe, incrementa la cantidad.
+             * @param {object} product - El objeto del producto a agregar (name, price, image).
+             */
+            const addToCart = (product) => {
+                const existingProductIndex = cart.findIndex(item => item.name === product.name);
+
+                if (existingProductIndex > -1) {
+                    cart[existingProductIndex].quantity += 1;
+                } else {
+                    cart.push({ ...product, quantity: 1 });
+                }
+                saveCart();
+                updateCartBadge();
+            };
+
+            /**
+             * Elimina un producto del carrito por su nombre.
+             * @param {string} productName - El nombre del producto a eliminar.
+             */
+            const removeItemFromCart = (productName) => {
+                cart = cart.filter(item => item.name !== productName);
+                saveCart();
+                updateCartBadge();
+                renderCartItems(); // Vuelve a renderizar el carrito para mostrar los cambios
+            };
+
+            /**
+             * Renderiza los ítems del carrito en el modal.
+             */
+            const renderCartItems = () => {
+                cartItemsContainer.innerHTML = ''; // Limpia los ítems previos
+                let totalPrice = 0;
+
+                if (cart.length === 0) {
+                    cartItemsContainer.innerHTML = '<p class="text-center text-muted">Tu carrito está vacío.</p>';
+                    cartTotalElement.textContent = `Total: $${formatPrice(0)}`;
+                    return;
+                }
+
+                cart.forEach(item => {
+                    const itemDiv = document.createElement('div');
+                    itemDiv.classList.add('cart-item');
+                    itemDiv.innerHTML = `
+                        <img src="${item.image}" alt="${item.name}">
+                        <div class="cart-item-details">
+                            <h6>${item.name}</h6>
+                            <p>Cantidad: ${item.quantity} | Precio: $${formatPrice(item.price)}</p>
+                            <p>Subtotal: $${formatPrice(item.price * item.quantity)}</p>
+                        </div>
+                        <button class="remove-item-btn" data-name="${item.name}">Eliminar</button>
+                    `;
+                    cartItemsContainer.appendChild(itemDiv);
+                    totalPrice += item.price * item.quantity;
+                });
+
+                cartTotalElement.textContent = `Total: $${formatPrice(totalPrice)}`;
+
+                // Agrega listeners de eventos a los nuevos botones "Eliminar"
+                document.querySelectorAll('.remove-item-btn').forEach(button => {
+                    button.addEventListener('click', (event) => {
+                        const productName = event.target.dataset.name;
+                        removeItemFromCart(productName);
+                    });
+                });
+            };
+
+            // --- Listeners de Eventos ---
+
+            // Botones "Agregar al carrito"
+            addToCartButtons.forEach(button => {
+                button.addEventListener('click', (event) => {
+                    const productName = event.target.dataset.name;
+                    const productPrice = parseFloat(event.target.dataset.price);
+                    const productImage = event.target.dataset.image;
+
+                    addToCart({ name: productName, price: productPrice, image: productImage });
+                });
+            });
+
+            // Clic en el ícono del carrito (abre el modal)
+            cartIcon.addEventListener('click', () => {
+                renderCartItems(); // Renderiza los ítems cuando el modal está a punto de abrirse
+            });
+
+            // Actualización inicial del badge del carrito al cargar la página
+            updateCartBadge();
+        });
+    </script>
+</body>
+</html>
