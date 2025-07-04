@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sushein Wayuu Fashion</title>
-    <link rel="icon" type="image/x-icon" href="img/favicon-wayuu.png.jpg"> <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="icon" type="image/x-icon" href="img/favicon-wayuu.png.jpg">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
@@ -477,7 +478,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Seguir Comprando</button>
-                    <button type="button" class="btn btn-success">Proceder al Pago</button>
+                    <button type="button" class="btn btn-success" id="checkout-whatsapp-btn">Proceder al Pago por WhatsApp</button>
                 </div>
             </div>
         </div>
@@ -521,6 +522,10 @@
             const addToCartButtons = document.querySelectorAll('.add-to-cart');
             const cartItemsContainer = document.getElementById('cartItemsContainer');
             const cartTotalElement = document.getElementById('cartTotal');
+            const checkoutWhatsappBtn = document.getElementById('checkout-whatsapp-btn'); // Nuevo: Botón de WhatsApp
+
+            // Número de teléfono de WhatsApp (sin el signo '+', solo dígitos)
+            const whatsappPhoneNumber = '573215508152'; 
 
             // Inicializar el carrito desde localStorage o como un array vacío
             let cart = JSON.parse(localStorage.getItem('susheinWayuuCart')) || [];
@@ -554,9 +559,9 @@
                 }
                 // Si el precio no es un número válido, devuelve 0 formateado
                 if (isNaN(price)) {
-                    return (0).toLocaleString('es-CO');
+                    return (0).toLocaleString('es-CO', { style: 'currency', currency: 'COP', minimumFractionDigits: 0, maximumFractionDigits: 0 }); // Formato para Pesos Colombianos, sin decimales
                 }
-                return price.toLocaleString('es-CO'); // Formato para Pesos Colombianos
+                return price.toLocaleString('es-CO', { style: 'currency', currency: 'COP', minimumFractionDigits: 0, maximumFractionDigits: 0 }); // Formato para Pesos Colombianos, sin decimales
             };
 
             /**
@@ -595,8 +600,11 @@
 
                 if (cart.length === 0) {
                     cartItemsContainer.innerHTML = '<p class="text-center text-muted">Tu carrito está vacío.</p>';
-                    cartTotalElement.textContent = `Total: $${formatPrice(0)}`;
+                    cartTotalElement.textContent = `Total: ${formatPrice(0)}`;
+                    checkoutWhatsappBtn.disabled = true; // Deshabilita el botón si el carrito está vacío
                     return;
+                } else {
+                    checkoutWhatsappBtn.disabled = false; // Habilita el botón si hay ítems
                 }
 
                 cart.forEach(item => {
@@ -606,8 +614,8 @@
                         <img src="${item.image}" alt="${item.name}">
                         <div class="cart-item-details">
                             <h6>${item.name}</h6>
-                            <p>Cantidad: ${item.quantity} | Precio: $${formatPrice(item.price)}</p>
-                            <p>Subtotal: $${formatPrice(item.price * item.quantity)}</p>
+                            <p>Cantidad: ${item.quantity} | Precio: ${formatPrice(item.price)}</p>
+                            <p>Subtotal: ${formatPrice(item.price * item.quantity)}</p>
                         </div>
                         <button class="remove-item-btn" data-name="${item.name}">Eliminar</button>
                     `;
@@ -615,7 +623,7 @@
                     totalPrice += item.price * item.quantity;
                 });
 
-                cartTotalElement.textContent = `Total: $${formatPrice(totalPrice)}`;
+                cartTotalElement.textContent = `Total: ${formatPrice(totalPrice)}`;
 
                 // Agrega listeners de eventos a los nuevos botones "Eliminar"
                 document.querySelectorAll('.remove-item-btn').forEach(button => {
@@ -624,6 +632,26 @@
                         removeItemFromCart(productName);
                     });
                 });
+            };
+
+            /**
+             * Genera el mensaje para WhatsApp con los detalles del carrito.
+             * @returns {string} El mensaje codificado para la URL de WhatsApp.
+             */
+            const generateWhatsAppMessage = () => {
+                let message = "¡Hola! Me gustaría hacer un pedido de Sushein Wayuu Fashion.\n\n";
+                message += "Mi carrito contiene:\n";
+                let totalPrice = 0;
+
+                cart.forEach((item, index) => {
+                    message += `${index + 1}. ${item.name} - Cantidad: ${item.quantity} - Subtotal: ${formatPrice(item.price * item.quantity)}\n`;
+                    totalPrice += item.price * item.quantity;
+                });
+
+                message += `\nTotal a pagar: ${formatPrice(totalPrice)}`;
+                message += "\n\n¡Espero su confirmación!";
+
+                return encodeURIComponent(message); // Codifica el mensaje para la URL
             };
 
             // --- Listeners de Eventos ---
@@ -644,8 +672,20 @@
                 renderCartItems(); // Renderiza los ítems cuando el modal está a punto de abrirse
             });
 
+            // Nuevo: Clic en el botón "Proceder al Pago por WhatsApp"
+            checkoutWhatsappBtn.addEventListener('click', () => {
+                if (cart.length > 0) {
+                    const whatsappMessage = generateWhatsAppMessage();
+                    const whatsappURL = `https://wa.me/${whatsappPhoneNumber}?text=${whatsappMessage}`;
+                    window.open(whatsappURL, '_blank'); // Abre WhatsApp en una nueva pestaña
+                } else {
+                    alert('Tu carrito está vacío. Agrega productos antes de proceder al pago.');
+                }
+            });
+
             // Actualización inicial del badge del carrito al cargar la página
             updateCartBadge();
+            renderCartItems(); // También renderiza los ítems para habilitar/deshabilitar el botón de pago al cargar
         });
     </script>
 </body>
