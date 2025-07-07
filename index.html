@@ -18,6 +18,41 @@
             color: #333;
         }
 
+        /* Estilo para el contenedor de alertas */
+        #alertContainer {
+            position: fixed;
+            top: 50%; /* Centra verticalmente */
+            left: 50%; /* Centra horizontalmente */
+            transform: translate(-50%, -50%); /* Ajusta para un centrado perfecto */
+            z-index: 1050; /* Asegura que esté por encima de otros elementos */
+            width: 80%; /* Ancho para que se vea bien en el centro */
+            max-width: 400px; /* Ancho máximo para evitar que sea demasiado grande */
+            display: flex; /* Para centrar el contenido de la alerta */
+            justify-content: center; /* Para centrar el contenido de la alerta */
+            align-items: center; /* Para centrar el contenido de la alerta */
+        }
+        .alert-custom {
+            background-color: #28a745; /* Fondo verde para éxito */
+            color: white;
+            border: none;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            padding: 15px 20px;
+            font-size: 1.15em; /* Un poco más grande para mejor visibilidad */
+            display: flex;
+            align-items: center;
+            justify-content: space-between; /* Espacio entre el texto y el botón de cerrar */
+            width: 100%; /* Ocupa el ancho completo del contenedor */
+        }
+        .alert-custom .fa-check-circle {
+            margin-right: 10px;
+            font-size: 1.4em; /* Ícono un poco más grande */
+        }
+        .alert-custom .btn-close {
+            filter: invert(1); /* Para que el botón de cerrar sea blanco */
+        }
+
+
         /* Barra de navegación */
         .navbar {
             background-color: #212529; /* Un negro más suave */
@@ -359,6 +394,8 @@
         </div>
     </nav>
 
+    <div id="alertContainer"></div>
+
     <section class="container my-5 about-section" id="sobre-nosotros">
         <div class="row align-items-center">
             <div class="col-md-6 mb-4 mb-md-0">
@@ -522,52 +559,55 @@
             const addToCartButtons = document.querySelectorAll('.add-to-cart');
             const cartItemsContainer = document.getElementById('cartItemsContainer');
             const cartTotalElement = document.getElementById('cartTotal');
-            const checkoutWhatsappBtn = document.getElementById('checkout-whatsapp-btn'); // Nuevo: Botón de WhatsApp
+            const checkoutWhatsappBtn = document.getElementById('checkout-whatsapp-btn');
+            const alertContainer = document.getElementById('alertContainer');
 
-            // Número de teléfono de WhatsApp (sin el signo '+', solo dígitos)
             const whatsappPhoneNumber = '573215508152'; 
 
-            // Inicializar el carrito desde localStorage o como un array vacío
             let cart = JSON.parse(localStorage.getItem('susheinWayuuCart')) || [];
 
-            // --- Funcionalidad del Carrito ---
-
-            /**
-             * Actualiza el número en el badge del carrito.
-             */
             const updateCartBadge = () => {
                 const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
                 cartBadge.textContent = totalItems;
             };
 
-            /**
-             * Guarda el estado actual del carrito en localStorage.
-             */
             const saveCart = () => {
                 localStorage.setItem('susheinWayuuCart', JSON.stringify(cart));
             };
 
-            /**
-             * Formatea un precio a la moneda local (pesos colombianos).
-             * @param {number} price - El precio a formatear.
-             * @returns {string} El precio formateado.
-             */
             const formatPrice = (price) => {
-                // Asegúrate de que el precio sea un número antes de formatearlo
                 if (typeof price !== 'number') {
                     price = parseFloat(price);
                 }
-                // Si el precio no es un número válido, devuelve 0 formateado
                 if (isNaN(price)) {
-                    return (0).toLocaleString('es-CO', { style: 'currency', currency: 'COP', minimumFractionDigits: 0, maximumFractionDigits: 0 }); // Formato para Pesos Colombianos, sin decimales
+                    return (0).toLocaleString('es-CO', { style: 'currency', currency: 'COP', minimumFractionDigits: 0, maximumFractionDigits: 0 });
                 }
-                return price.toLocaleString('es-CO', { style: 'currency', currency: 'COP', minimumFractionDigits: 0, maximumFractionDigits: 0 }); // Formato para Pesos Colombianos, sin decimales
+                return price.toLocaleString('es-CO', { style: 'currency', currency: 'COP', minimumFractionDigits: 0, maximumFractionDigits: 0 });
             };
 
-            /**
-             * Agrega un producto al carrito. Si ya existe, incrementa la cantidad.
-             * @param {object} product - El objeto del producto a agregar (name, price, image).
-             */
+            const showCustomAlert = (message, type = 'success') => {
+                // Elimina cualquier alerta existente para que no se acumulen
+                while (alertContainer.firstChild) {
+                    alertContainer.removeChild(alertContainer.firstChild);
+                }
+
+                const alertDiv = document.createElement('div');
+                alertDiv.classList.add('alert', `alert-${type}`, 'alert-dismissible', 'fade', 'show', 'alert-custom');
+                alertDiv.setAttribute('role', 'alert');
+                alertDiv.innerHTML = `
+                    <i class="fas fa-check-circle me-2"></i>
+                    <div>${message}</div>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                `;
+                alertContainer.appendChild(alertDiv);
+
+                // Ocultar la alerta automáticamente después de 3 segundos
+                setTimeout(() => {
+                    const bsAlert = new bootstrap.Alert(alertDiv);
+                    bsAlert.close();
+                }, 3000);
+            };
+
             const addToCart = (product) => {
                 const existingProductIndex = cart.findIndex(item => item.name === product.name);
 
@@ -578,33 +618,27 @@
                 }
                 saveCart();
                 updateCartBadge();
+                showCustomAlert(`¡${product.name} ha sido agregado al carrito!`);
             };
 
-            /**
-             * Elimina un producto del carrito por su nombre.
-             * @param {string} productName - El nombre del producto a eliminar.
-             */
             const removeItemFromCart = (productName) => {
                 cart = cart.filter(item => item.name !== productName);
                 saveCart();
                 updateCartBadge();
-                renderCartItems(); // Vuelve a renderizar el carrito para mostrar los cambios
+                renderCartItems();
             };
 
-            /**
-             * Renderiza los ítems del carrito en el modal.
-             */
             const renderCartItems = () => {
-                cartItemsContainer.innerHTML = ''; // Limpia los ítems previos
+                cartItemsContainer.innerHTML = '';
                 let totalPrice = 0;
 
                 if (cart.length === 0) {
                     cartItemsContainer.innerHTML = '<p class="text-center text-muted">Tu carrito está vacío.</p>';
                     cartTotalElement.textContent = `Total: ${formatPrice(0)}`;
-                    checkoutWhatsappBtn.disabled = true; // Deshabilita el botón si el carrito está vacío
+                    checkoutWhatsappBtn.disabled = true;
                     return;
                 } else {
-                    checkoutWhatsappBtn.disabled = false; // Habilita el botón si hay ítems
+                    checkoutWhatsappBtn.disabled = false;
                 }
 
                 cart.forEach(item => {
@@ -625,7 +659,6 @@
 
                 cartTotalElement.textContent = `Total: ${formatPrice(totalPrice)}`;
 
-                // Agrega listeners de eventos a los nuevos botones "Eliminar"
                 document.querySelectorAll('.remove-item-btn').forEach(button => {
                     button.addEventListener('click', (event) => {
                         const productName = event.target.dataset.name;
@@ -634,10 +667,6 @@
                 });
             };
 
-            /**
-             * Genera el mensaje para WhatsApp con los detalles del carrito.
-             * @returns {string} El mensaje codificado para la URL de WhatsApp.
-             */
             const generateWhatsAppMessage = () => {
                 let message = "¡Hola! Me gustaría hacer un pedido de Sushein Wayuu Fashion.\n\n";
                 message += "Mi carrito contiene:\n";
@@ -651,12 +680,9 @@
                 message += `\nTotal a pagar: ${formatPrice(totalPrice)}`;
                 message += "\n\n¡Espero su confirmación!";
 
-                return encodeURIComponent(message); // Codifica el mensaje para la URL
+                return encodeURIComponent(message);
             };
 
-            // --- Listeners de Eventos ---
-
-            // Botones "Agregar al carrito"
             addToCartButtons.forEach(button => {
                 button.addEventListener('click', (event) => {
                     const productName = event.target.dataset.name;
@@ -667,25 +693,22 @@
                 });
             });
 
-            // Clic en el ícono del carrito (abre el modal)
             cartIcon.addEventListener('click', () => {
-                renderCartItems(); // Renderiza los ítems cuando el modal está a punto de abrirse
+                renderCartItems();
             });
 
-            // Nuevo: Clic en el botón "Proceder al Pago por WhatsApp"
             checkoutWhatsappBtn.addEventListener('click', () => {
                 if (cart.length > 0) {
                     const whatsappMessage = generateWhatsAppMessage();
                     const whatsappURL = `https://wa.me/${whatsappPhoneNumber}?text=${whatsappMessage}`;
-                    window.open(whatsappURL, '_blank'); // Abre WhatsApp en una nueva pestaña
+                    window.open(whatsappURL, '_blank');
                 } else {
-                    alert('Tu carrito está vacío. Agrega productos antes de proceder al pago.');
+                    showCustomAlert('Tu carrito está vacío. Agrega productos antes de proceder al pago.', 'warning');
                 }
             });
 
-            // Actualización inicial del badge del carrito al cargar la página
             updateCartBadge();
-            renderCartItems(); // También renderiza los ítems para habilitar/deshabilitar el botón de pago al cargar
+            renderCartItems();
         });
     </script>
 </body>
